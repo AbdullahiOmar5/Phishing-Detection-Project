@@ -34,7 +34,8 @@ phishing-detection project/
 │   ├── Decision_Tree_top20.pkl
 │   ├── scaler.pkl
 │   └── top20_features.json
-|
+|notebooks/
+│   ├── exploration.ipynb
 ├── project_paper.md
 └── README.md
 
@@ -84,14 +85,22 @@ phishing-detection project/
 - Flask (Python) with CORS enabled
 
 ### 🔌 API Endpoint
-- **POST** `/predict?model=lr|rf|dt`
-Query Parameter model: lr = Logistic Regression, rf = Random Forest, dt = Decision Tree
+
+- **POST** `/predict?model=lr|rf|dt`  
+  Query Parameter `model`:  
+  - `lr` = Logistic Regression  
+  - `rf` = Random Forest  
+  - `dt` = Decision Tree  
+
+---
 
 #### 🔹 Request
+
 ```json
 {
   "url": "https://paypal-login-secure-update.com/account"
 }
+
 
 🔹 Response
 {
@@ -102,10 +111,12 @@ Query Parameter model: lr = Logistic Regression, rf = Random Forest, dt = Decisi
   "url": "https://paypal-login-secure-update.com/account"
 }
 
+
 🔹 Example with cURL
 curl -X POST "http://127.0.0.1:5001/predict?model=rf" \
 -H "Content-Type: application/json" \
 -d '{"url": "https://paypal-login-secure-update.com/account"}'
+
 
 🔹 Example with Postman
 Method: POST
@@ -117,12 +128,13 @@ Body (raw JSON):
 }
   
 💻 Example Commands
-| Task             | Command                         |
-| ---------------- | ------------------------------- |
-| Preprocess data  | `python src/processing.py`      |
-| Train models     | `python src/train_models.py`    |
-| Test predictions | `python src/test_prediction.py` |
-| Run API locally  | `python src/app.py`             |
+| Task                  |               Command                       |
+| ----------------------| ------------------------------------------- |
+| reprocess data        |               python src/processing.py      |
+| Train models          |               python src/train_models.py    |
+| Test predictions      |               python src/test_prediction.py |
+| Run API               |               python src/app.py             |
+
 
 
 🧾 Results Summary

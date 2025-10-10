@@ -36,7 +36,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # === 5️⃣ Define models ===
 models = {
     "Logistic Regression": LogisticRegression(max_iter=10000, random_state=42),
-    "Random Forest": RandomForestClassifier(random_state=42),
+    "Random Forest": RandomForestClassifier(n_estimators=200, random_state=42),
     "Decision Tree": DecisionTreeClassifier(random_state=42)
 }
 

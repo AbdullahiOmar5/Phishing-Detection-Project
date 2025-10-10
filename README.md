@@ -1,35 +1,51 @@
-# 🎓 Final Project – Phishing Website Detection using Machine Learning
-
-## 👤 Student Information
-- **Name:** Abdullahi Omar  
-- **Course:** Machine Learning – Final Project  
-- **Date:** October 10, 2025  
-
----
-
-## 📘 Project Overview
-
-### 🔍 Project Title
-**Phishing Website Detection using Machine Learning**
-
-### 🧠 Description
-Phishing attacks are one of the most prevalent cyber threats, where malicious actors create deceptive websites to steal sensitive user information. This project leverages machine learning algorithms to automatically classify websites as either **Phishing** or **Legitimate** based on extracted URL and content-based features.
-
-A trained model is deployed via a **Flask API**, allowing real-time phishing detection by submitting a URL and receiving a prediction response.
-
+🎓 README.md – Phishing Website Detection using ML
+👤 Student Information
+Name: Abdullahi Omar Hussein
+Course: Machine Learning – Final Project
+Date: October 10, 2025
+📘 Project Overview
+🔍 Project Title
+Phishing Website Detection using Machine Learning
+🧠 Description
+Phishing attacks are one of the most prevalent cyber threats. Malicious actors create deceptive websites to steal sensitive user information. This project leverages machine learning algorithms to automatically classify websites as Phishing or Legitimate based on URL and content-based features.
+A trained model is deployed via a Flask API, allowing real-time phishing detection by submitting a URL and selecting a model.
 ---
 
 ## 🗂️ Project Structure
-phishing-detector/ │ ├── dataset/ │ └── dataset_phishing.csv │ ├── src/ │ ├── processing.py │ ├── train_models.py │ ├── utils.py │ ├── test_prediction.py │ └── app.py │ ├── models/ │ ├── Logistic Regression.pkl │ ├── Random Forest.pkl │ ├── Decision Tree.pkl │ ├── scaler.pkl │ └── top20_features.json │ ├── README.md └── project_paper.md
+phishing-detection project/
+│
+├── dataset/
+|   ├── raw       
+|   |     └── dataset_phishing.csv
+│   ├──processed      
+|        └── phishing_cleaned_dataset.csv
+│
+├── src/
+│   ├── processing.py          # Data preprocessing and feature engineering
+│   ├── train_models.py        # Model training (LR, RF, DT)
+│   ├── utils.py               # Helper functions (feature extraction, prediction)
+│   ├── test_prediction.py     # Local test for predictions
+|   ├── feature_extractor.py   # Extract dat to for predictions
+│   └── app.py                 # Flask API for deployment
+│
+├── models/
+│   ├── Logistic_Regression_top20.pkl
+│   ├── Random_Forest_top20.pkl
+│   ├── Decision_Tree_top20.pkl
+│   ├── scaler.pkl
+│   └── top20_features.json
+|
+├── project_paper.md
+└── README.md
 
 
 ---
 
 ## 🧩 Dataset Details
 
-- **Source:** UCI Machine Learning Repository  
-- **Samples:** ~11,055 rows  
-- **Features:** 30  
+- **Source:** kaggle 
+- **Samples:** ~11430 rows  
+- **Features:** 88  
 - **Target Column:** `Result` (1 = Phishing, -1 = Legitimate)
 
 ### ⚙️ Preprocessing Steps
@@ -41,57 +57,73 @@ phishing-detector/ │ ├── dataset/ │ └── dataset_phishing.csv │
 
 ---
 
-## 🤖 Algorithms Used
+## 🤖 Algorithms & Results
 
-| Algorithm               | Type            | Key Parameters                     | Accuracy | F1 Score |
-|------------------------|-----------------|------------------------------------|----------|----------|
-| Logistic Regression     | Linear Model     | `C=1.0`, `max_iter=500`             | 93%      | 0.93     |
-| Random Forest Classifier| Ensemble Model   | `n_estimators=200`, `max_depth=10` | 96%      | 0.96     |
-| Decision Tree Classifier| Tree Model       | `max_depth=8`                       | 94%      | 0.94     |
+| Model               | Accuracy | Precision | Recall | F1-Score |
+| ------------------- | -------- | --------- | ------ | -------- |
+| Logistic Regression | 91.95%   | 0.9088    | 0.9326 | 0.9206   |
+| Decision Tree       | 92.65%   | 0.9228    | 0.9309 | 0.9268   |
+| Random Forest       | 95.28%   | 0.9481    | 0.9580 | 0.9530   |
 
----
 
-## 📊 Evaluation & Sanity Checks
 
-| URL                                      | Expected    | Predicted   | Probability (Phishing) |
-|------------------------------------------|-------------|-------------|-------------------------|
-| paypal-login-secure-update.com           | Phishing    | Phishing    | 0.85                    |
-| www.google.com                           | Legitimate  | Legitimate  | 0.03                    |
-| secure-update-amazon-support.com         | Phishing    | Phishing    | 0.91                    |
+## 📊 Sanity Checks
 
----
+| Row | Actual | Logistic Regression | Random Forest | Decision Tree |
+| --- | ------ | ------------------- | ------------- | ------------- |
+| 1   | 1      | 1                   | 1             | 1             |
+| 5   | 0      | 0                   | 0             | 0             |
+| 10  | 1      | 1                   | 1             | 1             |
+| 34  | 1      | 1                   | 1             | 1             |
+
+
 
 ## 🚀 Deployment
 
 ### ✅ Framework
-- Flask (Python)
+- Flask (Python) with CORS enabled
 
 ### 🔌 API Endpoint
-- **POST** `/predict`
+- **POST** `/predict?model=lr|rf|dt`
+Query Parameter model: lr = Logistic Regression, rf = Random Forest, dt = Decision Tree
 
 #### 🔹 Request
 ```json
 {
   "url": "https://paypal-login-secure-update.com/account"
 }
+
 🔹 Response
 {
-  "model": "random_forest",
+  "model": "rf",
   "prediction": "Phishing",
   "raw_label": 1,
   "probability_phishing": 0.85,
   "url": "https://paypal-login-secure-update.com/account"
 }
+
 🔹 Example with cURL
-curl -X POST http://127.0.0.1:5001/predict \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://paypal-login-secure-update.com/account"}'
+curl -X POST "http://127.0.0.1:5001/predict?model=rf" \
+-H "Content-Type: application/json" \
+-d '{"url": "https://paypal-login-secure-update.com/account"}'
+
+🔹 Example with Postman
+Method: POST
+URL: http://127.0.0.1:5001/predict?model=rf
+Header: Content-Type: application/json
+Body (raw JSON):
+{
+  "url": "https://paypal-login-secure-update.com/account"
+}
+  
 💻 Example Commands
-Task	Command
-Preprocess data	python src/processing.py
-Train models	python src/train_models.py
-Test predictions	python src/test_prediction.py
-Run API locally	python src/app.py
+| Task             | Command                         |
+| ---------------- | ------------------------------- |
+| Preprocess data  | `python src/processing.py`      |
+| Train models     | `python src/train_models.py`    |
+| Test predictions | `python src/test_prediction.py` |
+| Run API locally  | `python src/app.py`             |
+
 
 🧾 Results Summary
 Best Model: Random Forest Classifier
@@ -108,12 +140,10 @@ Flask is effective for lightweight ML API deployment
 Tools like Postman and cURL are essential for testing and debugging APIs
 
 📘 References
+Kaggle - Phishing Web page phishing detection
 UCI ML Repository – Phishing Websites Dataset
 Scikit-Learn Documentation
 Flask Documentation
 Joblib for Model Serialization
-<<<<<<< HEAD
 Python Standard Library
-=======
-Python Standard Library
->>>>>>> ba27ddc (update project_paper.md)
+

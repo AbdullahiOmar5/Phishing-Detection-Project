@@ -107,12 +107,13 @@ phishing-detection project/
 
 ### 🔌 API Endpoint
 
-- **POST** `/predict?model=lr|rf|dt`
+- **POST** /predict?model=lr|rf|dt
+
 | Query Parameter | Model Name          |
-| --------------- | ------------------- |
-| `lr`            | Logistic Regression |
-| `rf`            | Random Forest       |
-| `dt`            | Decision Tree       |
+| ----------------| ------------------- |
+| lr              | Logistic Regression |
+| rf              | Random Forest       |
+| dt              | Decision Tree       |
 
 ---
 
@@ -125,6 +126,7 @@ phishing-detection project/
 ```
 
 ### 🔹 Response
+```json
 {
   "url": "https://paypal-login-secure-update.com/account",
   "results": [
@@ -133,23 +135,8 @@ phishing-detection project/
     {"model": "decision_tree", "prediction": "Phishing", "raw_label": 1, "probability_phishing": 1.0}
   ]
 }
+```
 
-
-
-### 🔹 Example with cURL
-curl -X POST "http://127.0.0.1:5001/predict?model=rf" \
--H "Content-Type: application/json" \
--d '{"url": "https://paypal-login-secure-update.com/account"}'
-
-
-### 🔹 Example with Postman
-Method: POST
-URL: http://127.0.0.1:5001/predict?model=rf
-Header: Content-Type: application/json
-Body (raw JSON):
-{
-  "url": "https://paypal-login-secure-update.com/account"
-}
   
 
 
@@ -221,5 +208,5 @@ React + Vite Documentation
 
 
 ## 🧑‍💻 Author
-Abdullahi Omar Hussein
-Machine Learning Engineer
+### Abdullahi Omar Hussein
+### Machine Learning Engineer

@@ -1,46 +1,61 @@
-# test_prediction.py
+# batch_test.py
+import pandas as pd
+from feature_extractor import extract_features_from_url_extended
 from utils import predict_phishing
+import os
 
-# =========================================================
-# 🧩 Sample Record — must include only the top 20 features
-# =========================================================
-sample_record = {
-    "length_url": 45,
-    "length_hostname": 18,
-    "nb_dots": 2,
-    "nb_hyphens": 1,
-    "nb_at": 0,
-    "ratio_digits_url": 0.15,
-    "ratio_digits_host": 0.02,
-    "shortest_words_raw": 3,
-    "longest_words_raw": 10,
-    "avg_words_raw": 4.5,
-    "tld_in_path": 0,
-    "abnormal_subdomain": 1,
-    "nb_subdomains": 2,
-    "prefix_suffix": 0,
-    "random_domain": 0,
-    "shortening_service": 0,
-    "path_extension": 1,
-    "nb_redirection": 0,
-    "ratio_extHyperlinks": 0.05,
-    "ratio_intErrors": 0.0
-}
+# Put your test URLs here (legit + phishing)
+urls = [
+    # Legitimate
+    "https://www.apple.com/",
+    "https://www.google.com/",
+    "https://github.com/",
+    "https://www.bankofamerica.com/",
+    "https://www.wikipedia.org/",
+    "https://www.nytimes.com/",
+    "https://www.microsoft.com/",
+    "https://www.amazon.com/",
+    "https://www.bbc.co.uk/",
+    "https://stackoverflow.com/questions",
+    # Phishing
+    "http://secure-paypal-account-login.xyz",
+    "http://login-paypal-secure.xyz",
+    "http://appleid.apple.com-app.es/",
+    "http://update-google-account.verify-login.info/",
+    "http://bankofamerica.login.verify-online.top/",
+    "http://secure-login-gmail.com/",
+    "http://free-gift-amazon-prize.online/claim",
+    "http://bit.ly/secure-login-123",
+    "http://123.45.67.89/verify",
+    "http://paypal.support.account.verify.online/login"
+]
 
-# =========================================================
-# 🔮 Test predictions using all 3 models
-# =========================================================
+rows = []
+models = ["logistic_regression", "random_forest", "decision_tree"]
 
-print("🔹 Testing sample phishing prediction...\n")
+for url in urls:
+    # Extract features for URL
+    features = extract_features_from_url_extended(url)
 
-# Random Forest
-result_rf = predict_phishing(sample_record, model_name="random_forest")
-print("🌲 Random Forest Prediction:", result_rf)
+    # Add original url for inspection
+    row = {"url": url}
+    # run predictions for each model
+    for m in models:
+        try:
+            res = predict_phishing(features, model_name=m)
+            row[f"{m}_pred"] = res["prediction"]
+            row[f"{m}_raw"] = res["raw_label"]
+            row[f"{m}_prob"] = res["probability_phishing"]
+        except Exception as e:
+            row[f"{m}_pred"] = None
+            row[f"{m}_raw"] = None
+            row[f"{m}_prob"] = None
+            row[f"{m}_error"] = str(e)
+    rows.append(row)
 
-# Logistic Regression
-result_lr = predict_phishing(sample_record, model_name="logistic_regression")
-print("\n📈 Logistic Regression Prediction:", result_lr)
+df_results = pd.DataFrame(rows)
 
-# Decision Tree
-result_dt = predict_phishing(sample_record, model_name="decision_tree")
-print("\n🌳 Decision Tree Prediction:", result_dt)
+# Pretty print
+pd.set_option('display.max_columns', None)
+print(df_results)
+

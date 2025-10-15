@@ -1,24 +1,31 @@
-🎓 README.md – Phishing Website Detection using ML
-👤 Student Information
+# 🎓 Phishing Website Detection using Machine Learning
+
+## 👤 Student Information
 Name: Abdullahi Omar Hussein
 Course: Machine Learning – Final Project
 Date: October 10, 2025
-📘 Project Overview
+
+## 📘 Project Overview
 🔍 Project Title
 Phishing Website Detection using Machine Learning
 🧠 Description
-Phishing attacks are one of the most prevalent cyber threats. Malicious actors create deceptive websites to steal sensitive user information. This project leverages machine learning algorithms to automatically classify websites as Phishing or Legitimate based on URL and content-based features.
-A trained model is deployed via a Flask API, allowing real-time phishing detection by submitting a URL and selecting a model.
+Phishing attacks remain one of the most common cyber threats worldwide.
+Malicious actors often create deceptive websites to steal sensitive user information such as login credentials or financial details.
+This project leverages machine learning models to classify websites as Phishing or Legitimate using 25 URL-based features.
+It integrates a Flask API backend with a modern React + Vite frontend, providing a real-time web interface for URL evaluation and visualization of model predictions.
 ---
 
 ## 🗂️ Project Structure
 phishing-detection project/
 │
 ├── dataset/
-|   ├── raw       
+|   ├── raw/       
 |   |     └── dataset_phishing.csv
-│   ├──processed      
-|        └── phishing_cleaned_dataset.csv
+│   ├──processed/
+|           ├── phishing_cleaned_dataset.csv  
+|           ├── phishing_test_scaled.csv
+|           ├── phishing_train_scaled.csv   
+
 │
 ├── src/
 │   ├── processing.py          # Data preprocessing and feature engineering
@@ -34,8 +41,18 @@ phishing-detection project/
 │   ├── Decision_Tree_top20.pkl
 │   ├── scaler.pkl
 │   └── top20_features.json
-|notebooks/
+|
+├── notebooks/
 │   ├── exploration.ipynb
+|
+├── frontend/                    # React + Vite UI (Tailwind + Framer Motion)
+│   ├── src/
+│   │   ├── pages/               # Home, Predict, About
+│   │   ├── components/          # Header, Footer, UrlCard, etc.
+│   │   └── styles/
+│   │       └── globals.css
+│   └── package.json
+|
 ├── project_paper.md
 └── README.md
 
@@ -47,24 +64,28 @@ phishing-detection project/
 - **Source:** kaggle 
 - **Samples:** ~11430 rows  
 - **Features:** 88  
+- **Features Used:** Top 25 most important features
 - **Target Column:** `Result` (1 = Phishing, -1 = Legitimate)
 
 ### ⚙️ Preprocessing Steps
 - Removed irrelevant or duplicate columns  
 - Normalized numerical features  
-- Selected top 20 features using Random Forest feature importance  
-- Scaled features using `StandardScaler`  
-- Saved processed data and scaler for model training and deployment  
+- Selected top 25 features using Random Forest importance ranking  
+- Scaled features using `StandardScaler`
+- Applied StandardScaler for feature normalization  
+- Saved processed data and scaler for model training and deployment 
+- Stored scaler.pkl and top25_features.json for consistent API inference 
 
 ---
 
-## 🤖 Algorithms & Results
+## 🤖 Machine Learning Models & Results
 
-| Model               | Accuracy | Precision | Recall | F1-Score |
-| ------------------- | -------- | --------- | ------ | -------- |
-| Logistic Regression | 91.95%   | 0.9088    | 0.9326 | 0.9206   |
-| Decision Tree       | 92.65%   | 0.9228    | 0.9309 | 0.9268   |
-| Random Forest       | 95.28%   | 0.9481    | 0.9580 | 0.9530   |
+| Model               | Accuracy   | Precision  | Recall     | F1-Score   |
+| ------------------- | ---------- | ---------- | ---------- | ---------- |
+| Logistic Regression | 0.7918     | 0.8191     | 0.7489     | 0.9220     |
+| Decision Tree       | 0.8329     | 0.8513     | 0.8066     | 0.8284     |
+| Random Forest       | 0.8613     | 0.8701     | 0.8495     | 0.8597     |
+
 
 
 
@@ -86,11 +107,12 @@ phishing-detection project/
 
 ### 🔌 API Endpoint
 
-- **POST** `/predict?model=lr|rf|dt`  
-  Query Parameter `model`:  
-  - `lr` = Logistic Regression  
-  - `rf` = Random Forest  
-  - `dt` = Decision Tree  
+- **POST** `/predict?model=lr|rf|dt`
+| Query Parameter | Model Name          |
+| --------------- | ------------------- |
+| `lr`            | Logistic Regression |
+| `rf`            | Random Forest       |
+| `dt`            | Decision Tree       |
 
 ---
 
@@ -100,25 +122,27 @@ phishing-detection project/
 {
   "url": "https://paypal-login-secure-update.com/account"
 }
+```
 
-
-🔹 Response
+### 🔹 Response
 {
-  "model": "rf",
-  "prediction": "Phishing",
-  "raw_label": 1,
-  "probability_phishing": 0.85,
-  "url": "https://paypal-login-secure-update.com/account"
+  "url": "https://paypal-login-secure-update.com/account",
+  "results": [
+    {"model": "random_forest", "prediction": "Phishing", "raw_label": 1, "probability_phishing": 0.93},
+    {"model": "logistic_regression", "prediction": "Phishing", "raw_label": 1, "probability_phishing": 0.84},
+    {"model": "decision_tree", "prediction": "Phishing", "raw_label": 1, "probability_phishing": 1.0}
+  ]
 }
 
 
-🔹 Example with cURL
+
+### 🔹 Example with cURL
 curl -X POST "http://127.0.0.1:5001/predict?model=rf" \
 -H "Content-Type: application/json" \
 -d '{"url": "https://paypal-login-secure-update.com/account"}'
 
 
-🔹 Example with Postman
+### 🔹 Example with Postman
 Method: POST
 URL: http://127.0.0.1:5001/predict?model=rf
 Header: Content-Type: application/json
@@ -127,35 +151,75 @@ Body (raw JSON):
   "url": "https://paypal-login-secure-update.com/account"
 }
   
-💻 Example Commands
-| Task                  |               Command                       |
-| ----------------------| ------------------------------------------- |
-| reprocess data        |               python src/processing.py      |
-| Train models          |               python src/train_models.py    |
-| Test predictions      |               python src/test_prediction.py |
-| Run API               |               python src/app.py             |
 
 
+## Frontend: React + Vite UI
 
-🧾 Results Summary
+### Overview
+A responsive and polished web UI was developed for interacting with the ML backend. The frontend provides an easy-to-use interface to submit URLs, select ML models, and inspect predictions.
+
+### Tech stack
+- React + Vite (fast dev server)
+- Tailwind CSS for styling
+- Framer Motion for animations
+- react-icons (icons)
+- Axios or fetch for API requests
+- Optional: shadcn/ui for prebuilt components
+
+### Pages & Components
+- `Home` — hero header, subtitle, two CTA buttons:
+  - **Try Demo** → goes to `/predict`
+  - **Learn More** → goes to `/about`
+- `Predict` — main interaction page:
+  - **UrlInputCard**: URL text input + model selector + Analyze button
+  - **EvaluationCard**: shows prediction, probability, and model name
+  - Loading spinner + friendly error messages for invalid URLs or network errors
+- `About` — project description, dataset, methods, author info
+- `Header` / `Footer` — navigation and project meta
+
+### How the frontend talks to the API
+- Dev default backend URL: `http://127.0.0.1:5001/predict`
+- Example request from frontend (POST JSON):
+  ```json
+  {"url": "https://paypal-login-secure-update.com/account"}
+  ```
+
+### Run Frontend:
+cd frontend
+npm install
+npm run dev
+
+### Run Backend:
+cd src
+python app.py
+
+
+## 🧾 Results Summary
 Best Model: Random Forest Classifier
-Accuracy: 96%
+Accuracy: 85%
 Inference Time: < 50 ms per URL
 Deployment: Flask API with CORS enabled
 Scalability: Easily integrable into web or mobile phishing detection tools
 
-💡 Lessons Learned
-Feature selection and scaling significantly improve model performance
-Random Forest outperforms linear models in non-linear classification tasks
-A unified preprocessing pipeline simplifies deployment
-Flask is effective for lightweight ML API deployment
-Tools like Postman and cURL are essential for testing and debugging APIs
+## 💡 Lessons Learned
+Feature selection and scaling greatly enhance model accuracy.
+Random Forest handled non-linear phishing patterns better than linear models.
+A unified preprocessing pipeline streamlined both training and deployment.
+Flask provided a simple yet powerful API framework for ML integration.
+Postman and cURL proved invaluable for API testing and debugging.
+React + Vite enabled a fast, responsive, and visually appealing frontend.
 
-📘 References
-Kaggle - Phishing Web page phishing detection
-UCI ML Repository – Phishing Websites Dataset
-Scikit-Learn Documentation
+## 📘 References
+Kaggle – Phishing Web Page Detection Dataset
+UCI Machine Learning Repository – Phishing Websites Dataset
+Scikit-learn Documentation
 Flask Documentation
-Joblib for Model Serialization
+Joblib (Model Serialization)
 Python Standard Library
+Tailwind CSS
+React + Vite Documentation
 
+
+## 🧑‍💻 Author
+Abdullahi Omar Hussein
+Machine Learning Engineer

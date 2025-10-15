@@ -1,7 +1,10 @@
+# model.py (Final Version – Metrics Summary + Sanity Check for All Models)
+
 import pandas as pd
-import matplotlib.pyplot as plt
 import joblib
-from sklearn.model_selection import train_test_split
+import os
+import json
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -9,38 +12,38 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, ConfusionMatrixDisplay
 )
-import json
 
-# === 1️⃣ Load preprocessed data ===
-path = '../dataset/processed/phishing_cleaned_dataset.csv'
-df = pd.read_csv(path)
-print("Loaded cleaned data:", df.shape)
+# === 1️⃣ Load preprocessed datasets ===
+TRAIN_PATH = "../dataset/processed/phishing_train_scaled.csv"
+TEST_PATH = "../dataset/processed/phishing_test_scaled.csv"
 
-# === 2️⃣ Load top 20 features ===
-top_features_path = '../models/top20_features.json'
-with open(top_features_path, 'r') as f:
-    top_features = json.load(f)
+df_train = pd.read_csv(TRAIN_PATH)
+df_test = pd.read_csv(TEST_PATH)
+print("✅ Loaded train/test datasets")
+print(f"Train: {df_train.shape}, Test: {df_test.shape}")
 
-print("Top 20 features being used:", top_features)
+# === 2️⃣ Load selected 25 features ===
+FEATURES_PATH = "../models/final_features.json"
+with open(FEATURES_PATH, "r") as f:
+    final_features = json.load(f)
 
-# === 3️⃣ Split into features & target ===
-TARGET_COL = 'status'
-X = df[top_features]  # only top 20 features
-y = df[TARGET_COL]
+TARGET_COL = "status"
 
-# === 4️⃣ Train-test split ===
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+# === 3️⃣ Prepare data ===
+X_train = df_train[final_features]
+y_train = df_train[TARGET_COL]
 
-# === 5️⃣ Define models ===
+X_test = df_test[final_features]
+y_test = df_test[TARGET_COL]
+
+# === 4️⃣ Define models ===
 models = {
     "Logistic Regression": LogisticRegression(max_iter=10000, random_state=42),
     "Random Forest": RandomForestClassifier(n_estimators=200, random_state=42),
     "Decision Tree": DecisionTreeClassifier(random_state=42)
 }
 
-# === 6️⃣ Helper functions ===
+# === 5️⃣ Helper: Evaluate model ===
 def evaluate_model(y_true, y_pred):
     return {
         "Accuracy": accuracy_score(y_true, y_pred),
@@ -49,47 +52,61 @@ def evaluate_model(y_true, y_pred):
         "F1-Score": f1_score(y_true, y_pred)
     }
 
-def plot_confusion_matrix(model, X_test, y_test, model_name):
-    y_pred = model.predict(X_test)
-    cm = confusion_matrix(y_test, y_pred)
-    print(f"\nConfusion Matrix for {model_name}:\n", cm)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    disp.plot(cmap='Blues', colorbar=True)
-    plt.title(f"{model_name} - Confusion Matrix")
-    plt.show()
-
-# === 7️⃣ Train and evaluate ===
+# === 6️⃣ Train, evaluate, and save models ===
+os.makedirs("../models", exist_ok=True)
 results = {}
+predictions_dict = {}
+
 for name, model in models.items():
-    print(f"\n🚀 Training {name} on top 20 features...")
+    print(f"\n🚀 Training {name}...")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+
+    # Evaluate
     metrics = evaluate_model(y_test, y_pred)
     results[name] = metrics
+    predictions_dict[name] = model
 
-    print(f"\n{name} Results:")
+    # Print metrics
+    print(f"\n{name} Performance:")
     for metric, value in metrics.items():
         print(f"{metric}: {value:.4f}")
 
-    plot_confusion_matrix(model, X_test, y_test, name)
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+    disp = ConfusionMatrixDisplay(cm, display_labels=["Legitimate", "Phishing"])
+    disp.plot(cmap="Blues")
+    plt.title(f"{name} Confusion Matrix")
+    plt.show()
 
-# === 8️⃣ Sanity checks for a few test rows ===
-print("\n🔍 Sanity Check on Sample Predictions (0 = Legitimate, 1 = Phishing):")
-indices_to_check = [1, 5, 10, 34]
+    # Save model
+    model_filename = f"{name.replace(' ', '_')}_25.pkl"
+    joblib.dump(model, f"../models/{model_filename}")
+    print(f"💾 Saved {name} model to ../models/{model_filename}")
 
-for i in indices_to_check:
-    x_one_df = X_test.iloc[[i]]
-    y_true = y_test.iloc[i]
+print("\n✅ All models trained, evaluated, and saved successfully!")
 
-    preds = {name: int(model.predict(x_one_df)[0]) for name, model in models.items()}
+# === 7️⃣ Metrics Summary Table ===
+results_df = pd.DataFrame(results).T
+results_df = results_df.sort_values(by="Accuracy", ascending=False)
+print("\n📊 Model Performance Summary:\n")
+print(results_df.to_string(index=True, float_format="%.4f"))
 
-    print(f"\n🧩 Row index {i}:")
-    print(f"  Actual Label : {y_true}")
-    for name, pred in preds.items():
-        print(f"  {name:18}: Predicted = {pred}")
+# === 8️⃣ Sanity Check for All Models ===
+sanity_rows = [1, 5, 10, 34]
+print("\n🔍 Sanity Check (Rows 1, 5, 10, 34):\n")
 
-# === 9️⃣ Save models ===
-for name, model in models.items():
-    model_path = f'../models/{name.replace(" ", "_")}_top20.pkl'
-    joblib.dump(model, model_path)
-    print(f"Saved {name} model (top 20 features) to {model_path}")
+for name, model in predictions_dict.items():
+    print(f"🧠 {name} Predictions:")
+    sanity_data = X_test.iloc[sanity_rows]
+    sanity_labels = y_test.iloc[sanity_rows].values
+    sanity_preds = model.predict(sanity_data)
+
+    sanity_df = pd.DataFrame({
+        "Row Index": sanity_rows,
+        "Actual": sanity_labels,
+        "Predicted": sanity_preds
+    })
+
+    print(sanity_df.to_string(index=False))
+    print("-" * 50)

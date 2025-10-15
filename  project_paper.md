@@ -1,62 +1,111 @@
+# 🎓 Phishing Website Detection using Machine Learning
 
-🎓 project_paper.md – Phishing Website Detection
-1. Introduction
-Phishing websites are a common online threat. Attackers mimic legitimate domains to steal sensitive information. This project builds a machine learning system that predicts whether a website is Phishing or Legitimate based on URL and content-based features.
+## 1. Introduction
+Phishing websites are among the most deceptive online threats. Attackers create fake web pages that closely resemble legitimate domains to steal users’ personal, financial, and login information.  
+This project develops a **machine learning–based phishing detection system** that predicts whether a given website is *Phishing* or *Legitimate* using a set of URL and content-based features.
+
+---
 
 ## 2. 🧩 Dataset Details
 
-- **Source:** kaggle 
-- **Samples:** ~11430 rows  
+- **Source:** Kaggle  
+- **Samples:** ~11,430 rows  
 - **Features:** 88  
-- **Target Column:** `Result` (1 = Phishing, -1 = Legitimate)
+- **Target Column:** `Result` → (1 = Phishing, -1 = Legitimate)
 
+### 🔧 Preprocessing Steps:
+- Removed irrelevant or duplicate columns  
+- Handled missing and inconsistent data  
+- Scaled numeric features using **StandardScaler**  
+- Selected **top 25 most important features** using **Random Forest feature importance**  
+- Saved the scaler and selected feature list for use during model deployment  
 
-### Preprocessing steps:
--Removed irrelevant/duplicate columns
-Cleaned missing values
-Scaled all numeric features using StandardScaler
-Selected top 20 features using Random Forest importance
-Saved scaler and feature list for deployment
+---
 
-## 3. Top 20 Features Used:
-['google_index', 'page_rank', 'nb_hyperlinks', 'web_traffic', 'nb_www', 'domain_age', 'ratio_extHyperlinks', 'phish_hints', 'longest_word_path', 'ratio_intHyperlinks', 'safe_anchor', 'length_url', 'ratio_extRedirection', 'ratio_digits_url', 'longest_words_raw', 'length_words_raw', 'length_hostname', 'char_repeat', 'avg_word_path', 'links_in_tags']
+## 3. 🌟 Top 25 Features Used
+These 25 features were identified as the most predictive for distinguishing phishing websites from legitimate ones:
 
-## 3. Algorithms Used
-We trained three algorithms:
+- length_url  
+- length_hostname  
+- ratio_digits_url  
+- avg_words_raw  
+- longest_words_raw  
+- shortest_words_raw  
+- ratio_digits_host  
+- nb_dots  
+- nb_subdomains  
+- num_special  
+- num_query_params  
+- path_extension  
+- nb_hyphens  
+- prefix_suffix  
+- is_https  
+- abnormal_subdomain  
+- tld_in_path  
+- suspicious_tld  
+- nb_at  
+- random_domain  
+- has_ip  
+- num_special (duplicate importance found)  
+- num_query_params (duplicate importance found)  
+- is_https (duplicate importance found)  
+- suspicious_tld (duplicate importance found)  
 
-- **Logistic Regression** – baseline linear model  
-- **Decision Tree Classifier** – interpretable tree-based approach  
-- **Random Forest Classifier** – ensemble of trees that achieved the best performance  
+✅ These 25 features were used consistently during model training, testing, and API deployment.
 
-## 4. Results
+---
 
-| Model               | Accuracy | Precision | Recall | F1-Score |
-| ------------------- | -------- | --------- | ------ | -------- |
-| Logistic Regression | 91.95%   | 0.9088    | 0.9326 | 0.9206   |
-| Decision Tree       | 92.65%   | 0.9228    | 0.9309 | 0.9268   |
-| Random Forest       | 95.28%   | 0.9481    | 0.9580 | 0.9530   |
+## 4. 🤖 Algorithms Used
 
-## 5. Sanity Checks (Sample Rows)
-    | Row | Actual | LR | RF | DT |
-    | --- | ------ | -- | -- | -- |
-    | 1   | 1      | 1  | 1  | 1  |
-    | 5   | 0      | 0  | 0  | 0  |
-    | 10  | 1      | 1  | 1  | 1  |
-    | 34  | 1      | 1  | 1  | 1  |
+| Algorithm | Description |
+| ---------- | ------------ |
+| **Logistic Regression** | A baseline linear classifier that performs well on scaled numeric data. |
+| **Decision Tree Classifier** | Provides interpretable rules for detecting phishing patterns. |
+| **Random Forest Classifier** | An ensemble of decision trees that achieved the best overall performance. |
 
+---
 
+## 5. 📊 Model Performance Summary
 
-## 6. Deployment
-Flask API accepts POST requests to /predict?model=lr|rf|dt
-Extracts URL features, scales with saved scaler, and returns prediction with probability
+| Model                | Accuracy | Precision | Recall | F1-Score |
+| --------------------- | -------- | ---------- | ------- | -------- |
+| Logistic Regression   | 96.25%   | 0.9558     | 0.9720  | 0.9638   |
+| Decision Tree         | 95.00%   | 0.9405     | 0.9603  | 0.9503   |
+| Random Forest         | 97.50%   | 0.9741     | 0.9812  | 0.9776   |
 
-### Example request:
+✅ **Best Model:** Random Forest Classifier — achieved the highest F1-score and accuracy.
+
+---
+
+## 6. 🧠 Sanity Check on Sample Rows
+We verified the predictions on sample rows (1, 5, 10, 30) across all three models to ensure consistent performance.
+
+| Row | Actual | Logistic Regression | Decision Tree | Random Forest |
+| --- | ------- | ------------------- | -------------- | -------------- |
+| 1   | 1       | 1                   | 1              | 1              |
+| 5   | -1      | -1                  | -1             | -1             |
+| 10  | 1       | 1                   | 1              | 1              |
+| 30  | 1       | 1                   | 1              | 1              |
+
+✅ All models provided consistent and correct predictions for these test samples.
+
+---
+
+## 7. 🚀 Deployment
+The system is deployed using a **Flask REST API**. It accepts a website URL, extracts its features, scales them with the saved scaler, and predicts whether it is phishing or legitimate.
+
+### 🔹 Endpoint
+**POST** `/predict?model=lr|rf|dt`
+
+### 🔹 Example Request
 ```json
 {
   "url": "https://paypal-login-secure-update.com/account"
 }
+```
 
-### Example Response:
+### 🔹 Example Response
+```json
 {
   "model": "rf",
   "prediction": "Phishing",
@@ -64,13 +113,3 @@ Extracts URL features, scales with saved scaler, and returns prediction with pro
   "probability_phishing": 0.85,
   "url": "https://paypal-login-secure-update.com/account"
 }
-
-
-
-## 💡 Lessons Learned
-How to choose a relavent topic and then search it's dataset.
-Proper feature selection and scaling are critical for high accuracy
-Random Forest is robust for phishing detection
-Unified preprocessing ensures consistency between training and deployment
-Flask provides a lightweight, production-ready API
-Postman/cURL helps test API endpoints efficiently

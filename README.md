@@ -82,7 +82,7 @@ phishing-detection project/
 
 | Model               | Accuracy   | Precision  | Recall     | F1-Score   |
 | ------------------- | ---------- | ---------- | ---------- | ---------- |
-| Logistic Regression | 0.7918     | 0.8191     | 0.7489     | 0.9220     |
+| Logistic Regression | 0.7918     | 0.8191     | 0.7489     | 0.7824     |
 | Decision Tree       | 0.8329     | 0.8513     | 0.8066     | 0.8284     |
 | Random Forest       | 0.8613     | 0.8701     | 0.8495     | 0.8597     |
 

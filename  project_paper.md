@@ -67,25 +67,25 @@ These 25 features were identified as the most predictive for distinguishing phis
 
 ## 5. 📊 Model Performance Summary
 
-| Model                | Accuracy | Precision | Recall | F1-Score |
-| --------------------- | -------- | ---------- | ------- | -------- |
-| Logistic Regression   | 96.25%   | 0.9558     | 0.9720  | 0.9638   |
-| Decision Tree         | 95.00%   | 0.9405     | 0.9603  | 0.9503   |
-| Random Forest         | 97.50%   | 0.9741     | 0.9812  | 0.9776   |
+| Model               | Accuracy   | Precision  | Recall     | F1-Score   |
+| ------------------- | ---------- | ---------- | ---------- | ---------- |
+| Logistic Regression | 0.7918     | 0.8191     | 0.7489     | 0.7824     |
+| Decision Tree       | 0.8329     | 0.8513     | 0.8066     | 0.8284     |
+| Random Forest       | 0.8613     | 0.8701     | 0.8495     | 0.8597     |
 
 ✅ **Best Model:** Random Forest Classifier — achieved the highest F1-score and accuracy.
 
 ---
 
 ## 6. 🧠 Sanity Check on Sample Rows
-We verified the predictions on sample rows (1, 5, 10, 30) across all three models to ensure consistent performance.
+We verified the predictions on sample rows (1, 5, 10, 34) across all three models to ensure consistent performance.
 
-| Row | Actual | Logistic Regression | Decision Tree | Random Forest |
-| --- | ------- | ------------------- | -------------- | -------------- |
-| 1   | 1       | 1                   | 1              | 1              |
-| 5   | -1      | -1                  | -1             | -1             |
-| 10  | 1       | 1                   | 1              | 1              |
-| 30  | 1       | 1                   | 1              | 1              |
+| Row | Actual | Logistic Regression | Random Forest | Decision Tree |
+| --- | ------ | ------------------- | ------------- | ------------- |
+| 1   | 1      | 1                   | 1             | 1             |
+| 5   | 0      | 0                   | 0             | 0             |
+| 10  | 1      | 1                   | 1             | 1             |
+| 34  | 1      | 1                   | 1             | 1             |
 
 ✅ All models provided consistent and correct predictions for these test samples.
 
@@ -113,3 +113,4 @@ The system is deployed using a **Flask REST API**. It accepts a website URL, ext
   "probability_phishing": 0.85,
   "url": "https://paypal-login-secure-update.com/account"
 }
+```

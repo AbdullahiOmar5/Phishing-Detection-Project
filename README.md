@@ -17,7 +17,7 @@ This project develops a **machine learning–based phishing detection system** t
 ## 🗂️ Project Structure
 
 ```
-phishing-detection project/
+phishing detection project/
 │
 ├── dataset/
 |   ├── raw/       
@@ -135,7 +135,7 @@ phishing-detection project/
 ```
 ---
 
-## Frontend: React + Vite UI
+## 🎨 Frontend: React + Vite UI
 
 ### Overview
 A responsive and polished web UI was developed for interacting with the ML backend. The frontend provides an easy-to-use interface to submit URLs, select ML models, and inspect predictions.

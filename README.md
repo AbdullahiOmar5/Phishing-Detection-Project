@@ -9,10 +9,9 @@ Date: October 10, 2025
 **Project Title:** Phishing Website Detection using Machine Learning
 
 ### 🧠 Description
-Phishing attacks remain one of the most common cyber threats worldwide.
-Malicious actors often create deceptive websites to steal sensitive user information such as login credentials or financial details.
-This project leverages machine learning models to classify websites as Phishing or Legitimate using 25 URL-based features.
-It integrates a Flask API backend with a modern React + Vite frontend, providing a real-time web interface for URL evaluation and visualization of model predictions.
+Phishing websites are among the most deceptive online threats. Attackers create fake web pages that closely resemble legitimate domains to steal users’ personal, financial, and login information.  
+This project develops a **machine learning–based phishing detection system** that predicts whether a given website is *Phishing* or *Legitimate* using a set of URL and content-based features.
+
 ---
 
 ## 🗂️ Project Structure

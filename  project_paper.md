@@ -46,10 +46,10 @@ These 25 features were identified as the most predictive for distinguishing phis
 - nb_at  
 - random_domain  
 - has_ip  
-- num_special (duplicate importance found)  
-- num_query_params (duplicate importance found)  
-- is_https (duplicate importance found)  
-- suspicious_tld (duplicate importance found)  
+- num_special 
+- num_query_params
+- is_https
+- suspicious_tld
 
 ✅ These 25 features were used consistently during model training, testing, and API deployment.
 

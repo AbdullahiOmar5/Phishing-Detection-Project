@@ -20,35 +20,45 @@ Responsive Design – Perfect across desktop, tablet, and mobile
 Dark Mode Support – Seamless adaptation to system theme
 ## 🚀 Quick Start
 ### Install dependencies
+```
 npm install
-
+```
 ### Run development server
+```
 npm run dev
-
+```
 ### Build for production
-npm run build
 
+```
+npm run build
+```
 ### Preview production build
 npm run preview
 Then open in your browser:
 👉 http://localhost:5173
 ## 🔗 API Integration
-The app communicates with the Flask backend (default: http://127.0.0.1:5000)
-Each model can be selected using the query parameter model=lr|rf|dt.
-Example Request:
+The app communicates with the Flask backend (default: http://127.0.0.1:5001)
+
+#### 🔹 Request
+```json
 POST http://127.0.0.1:5000/predict?model=rf
 
 {
   "url": "https://paypal-login-secure-update.com/account"
 }
-Example Response:
+```
+
+### 🔹 Response
+```json
 {
-  "model": "rf",
-  "prediction": "Phishing",
-  "raw_label": 1,
-  "probability_phishing": 0.85,
-  "url": "https://paypal-login-secure-update.com/account"
+  "url": "https://paypal-login-secure-update.com/account",
+  "results": [
+    {"model": "random_forest", "prediction": "Phishing", "probability_phishing": 0.93, "raw_label": 1,},
+    {"model": "logistic_regression", "prediction": "Phishing", "probability_phishing": 0.84, "raw_label": 1,},
+    {"model": "decision_tree", "prediction": "Phishing", "probability_phishing": 1.0, "raw_label": 1,}
+  ]
 }
+```
 ## 🧭 Navigation Pages
 Page	    Description
 🏠 Home	Project introduction, hero section, and CTA buttons

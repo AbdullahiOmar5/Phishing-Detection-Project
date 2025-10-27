@@ -71,7 +71,6 @@ Frontend	React + Vite
 Styling	Tailwind CSS + shadcn/ui
 Icons	Lucide React
 Animation	Framer Motion
-Charts (optional)	Recharts
 Backend	Flask API
 Language	Python (Scikit-Learn, Pandas, Joblib)
 ## 📱 Responsive Design
